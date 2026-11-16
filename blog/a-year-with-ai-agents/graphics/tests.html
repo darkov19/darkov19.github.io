@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>41 to 755 tests in 15 days</title>
+<style>
+  /* House look. Copy this block as is; see AGENTS.md. */
+  :root{--bg:#141414;--fg:#e6e6e6;--dim:#9a9a9a;--font:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font)}
+  svg{display:block;width:100%;height:auto}
+  svg text{font-family:var(--font);fill:var(--fg)}
+  .dim{fill:var(--dim)}
+  .ln{fill:none;stroke:var(--fg);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .thin{stroke-width:1.5}
+  .draw{stroke-dasharray:1;stroke-dashoffset:1}
+  .fade{opacity:0}
+  .go .draw{animation:draw .7s ease-out forwards;animation-delay:var(--d,0s)}
+  .go .fade{animation:fade .5s ease-out forwards;animation-delay:var(--d,0s)}
+  .final .draw{stroke-dashoffset:0}
+  .final .fade{opacity:1}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes fade{to{opacity:1}}
+</style>
+<script>
+  // ?final shows the end state (for PNG and PDF); otherwise the drawing plays once.
+  addEventListener('DOMContentLoaded',()=>document.body.classList.add(new URLSearchParams(location.search).has('final')?'final':'go'));
+</script>
+</head><body>
+<!-- 1080×1350. Line chart from chart.html. The 14 real counts; 04-04 has no time, so it is plotted at noon. -->
+<svg id="c" viewBox="0 0 1080 1350" role="img" aria-label="Line chart: test count rose from 41 on 24 March to 755 on 8 April, in 14 counts"></svg>
+<script>
+  const POINTS = [['03-24 14:14', 41], ['03-24 20:21', 77], ['03-25 01:20', 91], ['03-25 15:38', 115], ['03-25 17:39', 132], ['03-26 17:25', 190], ['03-26 23:38', 225], ['03-27 21:14', 241], ['03-30 23:27', 291], ['04-01 17:17', 360], ['04-02 21:49', 435], ['04-04 12:00', 535], ['04-07 16:58', 626], ['04-08 03:48', 755]];
+  const TITLE = '41 to 755 tests in 15 days', SUB = 'One count per review round, on a client web app', NOTE = 'A dev agent, a review agent, and me pasting between them.';
+  const svg = document.getElementById('c'), NS = 'http://www.w3.org/2000/svg';
+  const el = (n, a, t) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (t) e.textContent = t; svg.appendChild(e); return e; };
+  const t = s => { const [md, hm] = s.split(' '), [m, d] = md.split('-').map(Number), [h, mi] = hm.split(':').map(Number); return Date.UTC(2026, m - 1, d, h, mi); };
+  const T0 = Date.UTC(2026, 2, 24), T1 = Date.UTC(2026, 3, 9), L = 170, R = 990, TOP = 330, BOT = 1010, YMAX = 800;
+  const x = ms => L + (R - L) * (ms - T0) / (T1 - T0), y = v => BOT - (BOT - TOP) * v / YMAX;
+
+  el('text', {x: 90, y: 160, 'font-size': 40, 'font-weight': 700, class: 'fade', style: '--d:0s'}, TITLE);
+  el('text', {x: 90, y: 212, 'font-size': 26, class: 'dim fade', style: '--d:.2s'}, SUB);
+  for (const v of [0, 200, 400, 600, 800]) {
+    el('path', {d: `M${L} ${y(v)} H${R}`, class: 'ln thin', style: 'stroke:var(--dim);opacity:.35'});
+    el('text', {x: L - 20, y: y(v) + 9, 'font-size': 24, 'text-anchor': 'end', class: 'dim'}, String(v));
+  }
+  for (const [lab, ms] of [['24 Mar', T0], ['28 Mar', Date.UTC(2026, 2, 28)], ['1 Apr', Date.UTC(2026, 3, 1)], ['5 Apr', Date.UTC(2026, 3, 5)], ['9 Apr', T1]]) {
+    el('path', {d: `M${x(ms)} ${BOT} v12`, class: 'ln thin'});
+    el('text', {x: x(ms), y: BOT + 48, 'font-size': 24, 'text-anchor': 'middle', class: 'dim'}, lab);
+  }
+  el('path', {d: `M${L} ${BOT} H${R}`, class: 'ln thin'});
+  const pts = POINTS.map(([s, v]) => [x(t(s)), y(v), v, s]);
+  el('path', {d: 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L'), class: 'ln draw', pathLength: 1, style: '--d:.6s;animation-duration:3.6s;animation-timing-function:linear'});
+  // dots appear as the line reaches them (the line is drawn by length, so this is close, not exact)
+  pts.forEach(([cx, cy, v, s], i) => {
+    const c = el('circle', {cx, cy, r: 9, class: 'fade', style: `fill:var(--bg);stroke:var(--fg);stroke-width:3;--d:${(.6 + 3.6 * i / (pts.length - 1)).toFixed(2)}s`});
+    const tip = document.createElementNS(NS, 'title'); tip.textContent = `${v} tests (${s})`; c.appendChild(tip);
+  });
+  const [fx, fy] = pts[0], [lx, ly] = pts[pts.length - 1];
+  el('text', {x: fx + 24, y: fy + 12, 'font-size': 32, 'font-weight': 700, class: 'fade', style: '--d:.7s'}, '41');
+  el('text', {x: lx, y: ly - 30, 'font-size': 32, 'font-weight': 700, 'text-anchor': 'end', class: 'fade', style: '--d:4.3s'}, '755');
+  el('text', {x: 90, y: 1160, 'font-size': 26, class: 'fade', style: '--d:4.6s'}, NOTE);
+  el('path', {d: 'M90 1230 H990', class: 'ln thin'});
+  el('text', {x: 90, y: 1280, 'font-size': 24, class: 'dim'}, 'Viral Shastri · darkov19.github.io');
+</script>
+</body></html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>My review rule, four versions</title>
+<style>
+  /* House look. Copy this block as is; see AGENTS.md. */
+  :root{--bg:#141414;--fg:#e6e6e6;--dim:#9a9a9a;--font:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font)}
+  svg{display:block;width:100%;height:auto}
+  svg text{font-family:var(--font);fill:var(--fg)}
+  .dim{fill:var(--dim)}
+  .ln{fill:none;stroke:var(--fg);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .thin{stroke-width:1.5}
+  .draw{stroke-dasharray:1;stroke-dashoffset:1}
+  .fade{opacity:0}
+  .go .draw{animation:draw .7s ease-out forwards;animation-delay:var(--d,0s)}
+  .go .fade{animation:fade .5s ease-out forwards;animation-delay:var(--d,0s)}
+  .final .draw{stroke-dashoffset:0}
+  .final .fade{opacity:1}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes fade{to{opacity:1}}
+</style>
+<script>
+  // ?final shows the end state (for PNG and PDF); otherwise the drawing plays once.
+  addEventListener('DOMContentLoaded',()=>document.body.classList.add(new URLSearchParams(location.search).has('final')?'final':'go'));
+</script>
+</head><body>
+<!-- 1080×1350 (4:5), from diagram.html. Steps and dates are in ../facts.md (mid July, late July, November). -->
+<svg id="c" viewBox="0 0 1080 1350" role="img" aria-label="My review rule in four versions: before 9 July an open-ended loop; 9 July at most 3 cycles then defer; 23 July one review and at most one repair; 4 November one rule for every agent: fix must-fix only, check once, at most three rounds"></svg>
+<script>
+  const STEPS = [
+    ['before 9 Jul', 'No stop rule', 'One review ran for an hour, repeating.'],
+    ['9 Jul', 'At most 3 cycles', 'Cycle 1 full; 2 and 3 check fixes; defer.'],
+    ['23 Jul', '1 review, at most 1 repair', 'No second review.'],
+    ['4 Nov', 'One rule for every agent', 'Fix must-fix only. Check once. Max 3 rounds.'],
+  ];
+  const svg = document.getElementById('c'), NS = 'http://www.w3.org/2000/svg';
+  const el = (n, a, t) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (t) e.textContent = t; svg.appendChild(e); return e; };
+  el('text', {x: 90, y: 160, 'font-size': 40, 'font-weight': 700, class: 'fade', style: '--d:0s'}, 'My review rule, four versions');
+  el('text', {x: 90, y: 212, 'font-size': 26, class: 'dim fade', style: '--d:.2s'}, 'An agent review loop needs a stop rule.');
+  const H = 170, GAP = 50, Y0 = 280;
+  STEPS.forEach(([when, rule, note], i) => {
+    const y = Y0 + i * (H + GAP), d = .4 + i * 1.3;
+    el('rect', {x: 90, y, width: 900, height: H, rx: 10, class: 'ln draw', pathLength: 1, style: `--d:${d}s` + (i === 3 ? ';stroke-width:5' : '')});
+    el('text', {x: 125, y: y + 50, 'font-size': 24, class: 'dim fade', style: `--d:${d + .4}s`}, when);
+    el('text', {x: 125, y: y + 100, 'font-size': 34, 'font-weight': 700, class: 'fade', style: `--d:${d + .5}s`}, rule);
+    el('text', {x: 125, y: y + 145, 'font-size': 26, class: 'dim fade', style: `--d:${d + .6}s`}, note);
+    if (i < STEPS.length - 1) { const ay = y + H; el('path', {d: `M540 ${ay} V${ay + GAP} M528 ${ay + GAP - 16} L540 ${ay + GAP} L552 ${ay + GAP - 16}`, class: 'ln draw', pathLength: 1, style: `--d:${d + .9}s`}); }
+  });
+  el('text', {x: 90, y: 1180, 'font-size': 26, class: 'fade', style: '--d:5.2s'}, 'From no stop rule to one rule for all.');
+  el('path', {d: 'M90 1230 H990', class: 'ln thin'});
+  el('text', {x: 90, y: 1280, 'font-size': 24, class: 'dim'}, 'Viral Shastri · darkov19.github.io');
+</script>
+</body></html>

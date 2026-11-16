@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog · Viral Shastri</title>
+<meta name="description" content="Notes on AI engineering and backend systems from my own work: designs, decisions, what failed and what fixed it.">
+<link rel="canonical" href="https://darkov19.github.io/blog/">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+:root{--bg:#fff;--fg:#000;--dim:#3d3d3d;--line:#000}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--fg:#fff;--dim:#c8c8c8;--line:#fff}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1.0625rem/1.75 "IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+main,header,footer{max-width:46rem;margin:0 auto;padding:0 1.25rem}
+a{color:var(--fg);text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:3px}
+a:focus-visible{outline:3px solid var(--fg);outline-offset:3px;text-decoration:none}
+.skip{position:absolute;left:-9999px;top:0;background:var(--fg);color:var(--bg);padding:.5rem 1rem}
+.skip:focus{left:1rem;top:1rem}
+.mark{color:var(--dim);font-weight:400}
+header{padding-top:2.5rem}
+h1{font-size:clamp(1.9rem,6vw,2.6rem);line-height:1.15;margin:0 0 .25rem;font-weight:700}
+.role{font-size:1.15rem;margin:0 0 1.5rem}
+h2{font-size:1.25rem;margin:3rem 0 1rem;font-weight:700}
+h3{font-size:1.0625rem;margin:1.75rem 0 .1rem;font-weight:700}
+p{margin:0 0 1rem}
+ul{margin:.5rem 0 1rem;padding-left:1.5rem}
+li{margin:.3rem 0}
+li::marker{content:"- "}
+.links{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;margin:0}
+.links li::marker{content:none}
+.meta{color:var(--dim);margin:0 0 .5rem}
+pre{margin:1rem 0 1.5rem;padding:1rem 1.25rem;border:1px solid var(--line);overflow-x:auto;font:inherit;line-height:1.7;white-space:pre-wrap}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:.35rem 1.5rem}
+dt{font-weight:700}
+dd{margin:0}
+hr{border:0;border-top:1px solid var(--line);margin:3rem 0 0}
+footer{padding-bottom:3rem;color:var(--dim)}
+footer p{margin-top:1.5rem}
+@media (max-width:560px){dl{grid-template-columns:1fr;gap:0}dd{margin-bottom:.75rem}}
+@media print{.skip{display:none}a{text-decoration:none}}
+.posts{list-style:none;padding:0}
+.posts li::marker{content:none}
+.posts li{margin:0 0 1.75rem}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <p class="meta"><a href="/">Viral Shastri</a> / Blog</p>
+  <h1><span class="mark" aria-hidden="true"># </span>Blog</h1>
+  <p class="role">AI engineering and backend systems, from my own work: designs, decisions, what failed and what fixed it.</p>
+</header>
+<main id="main">
+  <ul class="posts">
+    <li>
+      <h2 style="margin:0"><a href="a-year-with-ai-agents/">I stopped being the message bus</a></h2>
+      <p class="meta">November 2026 · 7 min read</p>
+      <p>What a year of AI agents changed in how I build: five shifts, from pasting text between two chats to one tested rules file for every agent.</p>
+    </li>
+    <li>
+      <h2 style="margin:0"><a href="ai-copied-hash/">My AI reviewer mistyped a hash. The fix was to stop asking it.</a></h2>
+      <p class="meta">16 November 2026 · 5 min read</p>
+      <p>6 of 245 good approvals lost to one wrong character, and the rule I took from it: the model judges, the code copies.</p>
+    </li>
+  </ul>
+  <hr>
+</main>
+<footer><p><a href="/">Home</a> · <a href="https://linkedin.com/in/viralshastri19">LinkedIn</a></p></footer>
+</body>
+</html>

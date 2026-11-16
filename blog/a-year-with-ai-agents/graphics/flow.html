@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>One change, March vs November</title>
+<style>
+  /* House look. Copy this block as is; see AGENTS.md. */
+  :root{--bg:#141414;--fg:#e6e6e6;--dim:#9a9a9a;--font:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font)}
+  svg{display:block;width:100%;height:auto}
+  svg text{font-family:var(--font);fill:var(--fg)}
+  .dim{fill:var(--dim)}
+  .ln{fill:none;stroke:var(--fg);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .thin{stroke-width:1.5}
+  .draw{stroke-dasharray:1;stroke-dashoffset:1}
+  .fade{opacity:0}
+  .go .draw{animation:draw .7s ease-out forwards;animation-delay:var(--d,0s)}
+  .go .fade{animation:fade .5s ease-out forwards;animation-delay:var(--d,0s)}
+  .final .draw{stroke-dashoffset:0}
+  .final .fade{opacity:1}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes fade{to{opacity:1}}
+</style>
+<script>
+  // ?final shows the end state (for PNG and PDF); otherwise the drawing plays once.
+  addEventListener('DOMContentLoaded',()=>document.body.classList.add(new URLSearchParams(location.search).has('final')?'final':'go'));
+</script>
+</head><body>
+<!-- 1080×1350 (4:5), from diagram.html. Every box is a step named in ../facts.md (March; July; October; November). No numbers. -->
+<svg id="c" viewBox="0 0 1080 1350" role="img" aria-label="One change in March: a dev chat and a review chat, with me pasting between them. One change in November: rules file, orchestrator, fresh sub-agents, a reviewer on another model, checks, then my approval before the push."></svg>
+<script>
+  const svg = document.getElementById('c'), NS = 'http://www.w3.org/2000/svg';
+  const el = (n, a, t) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (t) e.textContent = t; svg.appendChild(e); return e; };
+  const box = (cx, y, w, h, label, sub, d, bold) => {
+    el('rect', {x: cx - w / 2, y, width: w, height: h, rx: 10, class: 'ln draw', pathLength: 1, style: `--d:${d}s` + (bold ? ';stroke-width:5' : '')});
+    el('text', {x: cx, y: y + (sub ? h / 2 - 2 : h / 2 + 10), 'font-size': 28, 'text-anchor': 'middle', class: 'fade', style: `--d:${d + .4}s`}, label);
+    if (sub) el('text', {x: cx, y: y + h / 2 + 32, 'font-size': 21, 'text-anchor': 'middle', class: 'dim fade', style: `--d:${d + .4}s`}, sub);
+  };
+  const down = (cx, y1, y2, d) => el('path', {d: `M${cx} ${y1} V${y2} M${cx - 12} ${y2 - 16} L${cx} ${y2} L${cx + 12} ${y2 - 16}`, class: 'ln draw', pathLength: 1, style: `--d:${d}s`});
+  const both = (cx, y1, y2, d) => el('path', {d: `M${cx} ${y1} V${y2} M${cx - 12} ${y2 - 16} L${cx} ${y2} L${cx + 12} ${y2 - 16} M${cx - 12} ${y1 + 16} L${cx} ${y1} L${cx + 12} ${y1 + 16}`, class: 'ln draw', pathLength: 1, style: `--d:${d}s`});
+
+  el('text', {x: 90, y: 140, 'font-size': 40, 'font-weight': 700, class: 'fade', style: '--d:0s'}, 'One change, March vs November');
+  el('text', {x: 90, y: 190, 'font-size': 26, class: 'dim fade', style: '--d:.2s'}, 'Who stands in the middle?');
+  el('path', {d: 'M540 250 V1080', class: 'ln thin', style: 'stroke:var(--dim)'});
+
+  // March: me in the middle
+  const LX = 300, W = 340, H = 100;
+  el('text', {x: LX, y: 280, 'font-size': 28, 'font-weight': 700, 'text-anchor': 'middle', class: 'fade', style: '--d:.3s'}, 'MARCH');
+  box(LX, 330, W, H, 'dev chat', 'writes, fixes', .5);
+  both(LX, 430, 560, 1.1);
+  el('text', {x: LX + 20, y: 505, 'font-size': 21, class: 'dim fade', style: '--d:1.3s'}, 'paste');
+  box(LX, 560, W, H, 'me', 'copy, paste, remember', 1.5, true);
+  both(LX, 660, 790, 2.1);
+  el('text', {x: LX + 20, y: 735, 'font-size': 21, class: 'dim fade', style: '--d:2.3s'}, 'paste');
+  box(LX, 790, W, H, 'review chat', '3 sub-agents', 2.5);
+  el('text', {x: LX, y: 1010, 'font-size': 26, 'text-anchor': 'middle', class: 'fade', style: '--d:3s'}, 'I carry every');
+  el('text', {x: LX, y: 1046, 'font-size': 26, 'text-anchor': 'middle', class: 'fade', style: '--d:3s'}, 'message.');
+
+  // November: rules and gates in the middle, me at the end
+  const RX = 780, RW = 360, RH = 92, STEP = 132, R0 = 310;
+  el('text', {x: RX, y: 280, 'font-size': 28, 'font-weight': 700, 'text-anchor': 'middle', class: 'fade', style: '--d:3.3s'}, 'NOVEMBER');
+  const right = [['rules file', 'same for every agent'], ['orchestrator', 'plans, hands out work'], ['fresh sub-agents', 'build and fix'], ['reviewer', 'a different model'], ['checks', 'tests, CI, security'], ['me', 'approve the push']];
+  right.forEach(([label, sub], i) => {
+    const y = R0 + i * STEP, d = 3.5 + i * .6;
+    box(RX, y, RW, RH, label, sub, d, i === right.length - 1);
+    if (i < right.length - 1) down(RX, y + RH, y + STEP, d + .45);
+  });
+  el('text', {x: RX, y: 1150, 'font-size': 26, 'text-anchor': 'middle', class: 'fade', style: '--d:7.3s'}, 'I stand at the push.');
+  el('path', {d: 'M90 1230 H990', class: 'ln thin'});
+  el('text', {x: 90, y: 1280, 'font-size': 24, class: 'dim'}, 'Viral Shastri · darkov19.github.io');
+</script>
+</body></html>

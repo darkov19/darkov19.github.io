@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Nov 2025 to Nov 2026: how I work with AI agents</title>
+<style>
+  /* House look. Copy this block as is; see AGENTS.md. */
+  :root{--bg:#141414;--fg:#e6e6e6;--dim:#9a9a9a;--font:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font)}
+  svg{display:block;width:100%;height:auto}
+  svg text{font-family:var(--font);fill:var(--fg)}
+  .dim{fill:var(--dim)}
+  .ln{fill:none;stroke:var(--fg);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .thin{stroke-width:1.5}
+  .draw{stroke-dasharray:1;stroke-dashoffset:1}
+  .fade{opacity:0}
+  .go .draw{animation:draw .7s ease-out forwards;animation-delay:var(--d,0s)}
+  .go .fade{animation:fade .5s ease-out forwards;animation-delay:var(--d,0s)}
+  .final .draw{stroke-dashoffset:0}
+  .final .fade{opacity:1}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes fade{to{opacity:1}}
+</style>
+<style>
+  /* Timeline only: the detail panel steps month by month while the line draws; hover, tap or focus picks a month. */
+  .det{opacity:0}
+  .go .det{animation:flash var(--len) linear var(--d)}
+  @keyframes flash{0%{opacity:0}12%{opacity:1}88%{opacity:1}100%{opacity:0}}
+  .row{cursor:pointer;outline:none}
+  .row .hit{fill:transparent}
+  .row .hl{opacity:0}
+  .pick .sum{animation:none;opacity:0}
+  .pick .det{animation:none;opacity:0}
+  .pick .det.on{opacity:1}
+  .pick .row .tag{fill:var(--dim)}
+  .pick .row.on .tag{fill:var(--fg)}
+  .row.on .hl{opacity:1}
+  .row:focus-visible .hit{stroke:var(--fg);stroke-width:1.5;stroke-dasharray:6 6}
+</style>
+<script>
+  // ?final shows the end state (for PNG and PDF); otherwise the drawing plays once.
+  addEventListener('DOMContentLoaded',()=>document.body.classList.add(new URLSearchParams(location.search).has('final')?'final':'go'));
+</script>
+</head><body>
+<!-- 1080×1350 (4:5). Every line below is in ../facts.md. Ticks are the 23 turning points, one per turning point, in the month it started. -->
+<svg id="c" viewBox="0 0 1080 1350" role="group" aria-label="Timeline from November 2025 to November 2026: one line per month on how my work with AI agents changed, the main tool each month, and 23 turning points marked as ticks on the line."></svg>
+<script>
+  // [label, tag, main tool, detail lines, start days of the turning points that began that month]
+  const MONTHS = [
+    ["Nov '25", 'Test in a sandbox', 'Codex CLI', ['First Codex prompts: BMad in a test folder.', 'My own slash command did not run.'], [27]],
+    ["Dec '25", 'Review finds bugs', 'Codex in VS Code', ['Small client build, story by story: 48 commits.', 'The review step found real problems.'], []],
+    ['Jan', 'Commits say "Fixes"', 'Codex CLI', ['Quiet with agents. 23 commits, 10 of them', 'with subjects like "Fixes".'], []],
+    ['Feb', 'Plan first', 'Codex CLI', ['Full planning chain (PRD to sprint) before code.', "Rerun when a teammate's finished UI arrived."], [2]],
+    ['Mar', 'I was the message bus', 'Codex CLI', ['Dev agent + review agent; I pasted between them.', 'Tests: 41 to 755 in 15 days. First skills.'], [16, 23, 26]],
+    ['Apr', 'Steps go in a script', 'Codex CLI', ['One script: file list, checks, MR, rollback.', 'A skill around it in May.'], [30]],
+    ['May', 'One worktree per story', 'Codex CLI', ['Four stories at once, each in its own worktree.', 'Stale worktrees need cleaning up.'], [19, 20]],
+    ['Jun', 'Trust what is live', 'Codex CLI', ['A client app to production, from exact SHAs.', '"i only trust what was on the prod server"'], [4]],
+    ['Jul', 'Orchestrator, ten runs', 'Codex CLI', ['Type-cast pipeline: one thread orchestrates,', 'fresh sub-agents work. Ten runs, one monitor.'], [9, 15]],
+    ['Aug', 'Codex app, new skills', 'Codex CLI, app', ['Codex app, Matt Pocock\'s skills. A bridge so', 'my WSL agents can drive a real Windows Chrome.'], [3, 17, 26, 31]],
+    ['Sep', 'Delete more, add less', 'Codex app', ['Stopped patching; rebuilt my pipeline smaller.', "117 commits on main, 44 on 4 September."], [3, 23]],
+    ['Oct', 'Claude Code, T3 Code', 'Claude app, T3', ['Claude Code in the Claude app, then T3 Code.', 'Opus plans and codes; a GPT model reviews.'], [16, 21, 30, 31]],
+    ['Nov', 'One rules repo, tested', 'T3 Code', ['One rules file for every agent, checked', 'by an exam with fresh sessions.'], [4, 12]],
+  ];
+  const SUMMARY = ['From me in the middle of every message', 'to rules, checks and a reviewer in the middle.'];
+  const svg = document.getElementById('c'), NS = 'http://www.w3.org/2000/svg';
+  const el = (n, a, t, parent) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (t) e.textContent = t; (parent || svg).appendChild(e); return e; };
+
+  const X = 240, TOP = 300, BOT = 1005, START = 0.6, SPAN = 9.6, N = MONTHS.length;
+  const STEP = (BOT - TOP) / (N - 1), at = i => START + SPAN * i / (N - 1), LEN = SPAN / (N - 1);
+
+  el('text', {x: 90, y: 120, 'font-size': 44, 'font-weight': 700, class: 'fade', style: '--d:0s'}, 'Nov 2025 to Nov 2026');
+  el('text', {x: 90, y: 172, 'font-size': 28, class: 'dim fade', style: '--d:.2s'}, 'How I work with AI agents, month by month');
+  // legend
+  el('path', {d: 'M92 214 H116', class: 'ln fade', style: '--d:.3s'});
+  el('text', {x: 130, y: 223, 'font-size': 24, class: 'dim fade', style: '--d:.3s'}, 'turning point (23)');
+  el('circle', {cx: 432, cy: 214, r: 9, class: 'fade', style: 'fill:var(--bg);stroke:var(--fg);stroke-width:3;--d:.3s'});
+  el('text', {x: 454, y: 223, 'font-size': 24, class: 'dim fade', style: '--d:.3s'}, 'month');
+  el('text', {x: 990, y: 223, 'font-size': 24, 'text-anchor': 'end', class: 'dim fade', style: '--d:.3s'}, 'main tool');
+
+  el('path', {d: `M${X} ${TOP - STEP / 2} V${BOT + STEP / 2}`, class: 'ln draw', pathLength: 1, style: `--d:${(START - LEN / 2).toFixed(2)}s;animation-duration:${(SPAN + LEN).toFixed(2)}s;animation-timing-function:linear`});
+
+  // detail panel
+  el('rect', {x: 90, y: 1060, width: 900, height: 150, rx: 10, class: 'ln thin fade', style: '--d:.4s'});
+  const panel = (lines, cls, style) => { const g = el('g', {class: cls, style}); lines.forEach((t, k) => el('text', {x: 120, y: 1120 + k * 48, 'font-size': 29}, t, g)); return g; };
+  const dets = MONTHS.map((m, i) => panel(m[3], 'det', `--d:${at(i).toFixed(2)}s;--len:${LEN.toFixed(2)}s`));
+  panel(SUMMARY, 'sum fade', `--d:${(START + SPAN + .5).toFixed(2)}s`);
+
+  const rows = MONTHS.map(([mon, tag, tool, lines, days], i) => {
+    const y = TOP + i * STEP, d = at(i);
+    const g = el('g', {class: 'row', tabindex: 0, role: 'button', 'aria-label': `${mon}: ${tag}. Main tool: ${tool}. ${lines.join(' ')}${days.length ? ` Turning points: ${days.length}.` : ''}`});
+    el('rect', {x: 70, y: y - STEP / 2, width: 940, height: STEP, rx: 8, class: 'hit'}, null, g);
+    el('text', {x: X - 56, y: y + 9, 'font-size': 26, 'text-anchor': 'end', class: 'dim fade', style: `--d:${d.toFixed(2)}s`}, mon, g);
+    el('circle', {cx: X, cy: y, r: 24, class: 'ln thin hl'}, null, g);
+    el('circle', {cx: X, cy: y, r: 10, class: 'fade', style: `fill:var(--bg);stroke:var(--fg);stroke-width:3;--d:${d.toFixed(2)}s`}, null, g);
+    el('text', {x: X + 42, y: y + 11, 'font-size': 31, class: 'tag fade', style: `--d:${(d + .1).toFixed(2)}s`}, tag, g);
+    el('text', {x: 990, y: y + 8, 'font-size': 22, 'text-anchor': 'end', class: 'dim fade', style: `--d:${(d + .15).toFixed(2)}s`}, tool, g);
+    // one tick per turning point that started this month, in date order; it appears as the line reaches it
+    days.forEach((day, k) => {
+      const f = (k + 1) / (days.length + 1), ty = y - STEP / 2 + f * STEP;
+      el('path', {d: `M${X - 36} ${ty.toFixed(1)} H${X - 16}`, class: 'ln fade', style: `stroke-width:2.5;--d:${(d - LEN / 2 + f * LEN).toFixed(2)}s`}, null, g);
+    });
+    return g;
+  });
+
+  el('path', {d: 'M90 1240 H990', class: 'ln thin'});
+  el('text', {x: 90, y: 1288, 'font-size': 24, class: 'dim'}, 'Viral Shastri · darkov19.github.io');
+
+  // Picking a month ends the drawing and shows that month in the panel.
+  const pick = i => {
+    document.body.classList.replace('go', 'final');
+    svg.classList.add('pick');
+    rows.forEach((r, k) => r.classList.toggle('on', k === i));
+    dets.forEach((d, k) => d.classList.toggle('on', k === i));
+  };
+  const clear = () => { svg.classList.remove('pick'); rows.forEach(r => r.classList.remove('on')); dets.forEach(d => d.classList.remove('on')); };
+  rows.forEach((r, i) => {
+    r.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') pick(i); });
+    r.addEventListener('click', () => pick(i));
+    r.addEventListener('focus', () => pick(i));
+    r.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); rows[(i + (e.key === 'ArrowDown' ? 1 : N - 1)) % N].focus(); }
+    });
+  });
+  svg.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') clear(); });
+</script>
+</body></html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I stopped being the message bus · Viral Shastri</title>
+<meta name="description" content="What a year of AI agents changed in how I build: five shifts, from pasting text between two agent chats to one tested rules file for every agent, a second model as reviewer, and my approval on every push.">
+<meta property="og:title" content="I stopped being the message bus">
+<meta property="og:description" content="What a year of AI agents changed in how I build: five shifts, each with what broke, one number and the rule I keep.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://darkov19.github.io/blog/a-year-with-ai-agents/">
+<meta property="og:image" content="https://darkov19.github.io/blog/a-year-with-ai-agents/graphics/timeline.png">
+<link rel="canonical" href="https://darkov19.github.io/blog/a-year-with-ai-agents/">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+:root{--bg:#fff;--fg:#000;--dim:#3d3d3d;--line:#000}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--fg:#fff;--dim:#c8c8c8;--line:#fff}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1.0625rem/1.75 "IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+main,header,footer{max-width:46rem;margin:0 auto;padding:0 1.25rem}
+a{color:var(--fg);text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:3px}
+a:focus-visible{outline:3px solid var(--fg);outline-offset:3px;text-decoration:none}
+.skip{position:absolute;left:-9999px;top:0;background:var(--fg);color:var(--bg);padding:.5rem 1rem}
+.skip:focus{left:1rem;top:1rem}
+.mark{color:var(--dim);font-weight:400}
+header{padding-top:2.5rem}
+h1{font-size:clamp(1.9rem,6vw,2.6rem);line-height:1.15;margin:0 0 .25rem;font-weight:700}
+.role{font-size:1.15rem;margin:0 0 1.5rem}
+h2{font-size:1.25rem;margin:3rem 0 1rem;font-weight:700}
+h3{font-size:1.0625rem;margin:1.75rem 0 .1rem;font-weight:700}
+p{margin:0 0 1rem}
+ul{margin:.5rem 0 1rem;padding-left:1.5rem}
+li{margin:.3rem 0}
+li::marker{content:"- "}
+ol li::marker{content:counter(list-item) ". "}
+.links{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;margin:0}
+.links li::marker{content:none}
+.meta{color:var(--dim);margin:0 0 .5rem}
+pre{margin:1rem 0 1.5rem;padding:1rem 1.25rem;border:1px solid var(--line);overflow-x:auto;font:inherit;line-height:1.7;white-space:pre-wrap}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:.35rem 1.5rem}
+dt{font-weight:700}
+dd{margin:0}
+hr{border:0;border-top:1px solid var(--line);margin:3rem 0 0}
+footer{padding-bottom:3rem;color:var(--dim)}
+footer p{margin-top:1.5rem}
+@media (max-width:560px){dl{grid-template-columns:1fr;gap:0}dd{margin-bottom:.75rem}}
+@media print{.skip{display:none}a{text-decoration:none}}
+figure{margin:1.5rem 0 2rem}
+figure iframe,figure img{display:block;width:100%;max-width:540px;height:auto;aspect-ratio:4/5;border:0;background:#141414}
+figcaption{color:var(--dim);font-size:.9rem;margin-top:.5rem}
+figcaption button{font:inherit;color:var(--fg);background:none;border:1px solid var(--line);padding:0 .5rem;margin-left:.5rem;cursor:pointer}
+code{font:inherit}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <p class="meta"><a href="/">Viral Shastri</a> / <a href="/blog/">Blog</a></p>
+  <h1><span class="mark" aria-hidden="true"># </span>I stopped being the message bus</h1>
+  <p class="role">What a year of AI agents changed in how I build.</p>
+  <p class="meta">November 2026 · 7 min read</p>
+</header>
+<main id="main">
+<p>In March I was the message bus. One agent wrote code in one chat. Another reviewed it in a second chat. I copied text between them all day, and I was the only memory they shared.</p>
+<p>In November, one rules file governs every agent I run, in Claude and in Codex. Checks run on their own. A second model reviews what the first one built. My job is to approve the push.</p>
+<p>Better models helped. Most of the change came from five shifts in how I work, between my first logged Codex prompt in November 2025 and now. Each one started with something that broke. I started in Codex CLI, moved to the Codex desktop app in August, and since October I run my agents in T3 Code, mostly Claude Code. The numbers below come from my commits and my agent session logs.</p>
+
+<figure>
+  <iframe src="graphics/timeline.html" title="Timeline from November 2025 to November 2026: one line per month on how my work with agents changed, the main tool each month, and 23 turning points marked on the line." loading="lazy"></iframe>
+  <figcaption>The year at a glance. Hover or tap a month; each tick is a turning point. <button type="button" data-replay>replay</button></figcaption>
+</figure>
+
+<h2><span class="mark" aria-hidden="true">## </span>1. From me in the middle to scripts and worktrees</h2>
+<p>In March I built a client web app story by story with two sessions. A review session ran three sub-agents. A separate dev session fixed what they found. I pasted the dev's reply into the reviewer, and the findings back into the dev.</p>
+<p>It worked. Tests went from 41 to 755 in 15 days, and the reviews found real bugs: a race between a delete and a sync that was just starting, and daily stats that a retry could count twice. But the loop moved only as fast as I could read and paste. One story at a time, and only while I sat at the desk.</p>
+
+<figure>
+  <iframe src="graphics/tests.html" title="Line chart: test count from 41 on 24 March to 755 on 8 April, 14 real counts" loading="lazy"></iframe>
+  <figcaption>The 14 test counts the dev agent reported, one per review round. <button type="button" data-replay>replay</button></figcaption>
+</figure>
+
+<p>So I took myself out of every step I kept repeating. In April, shipping a story to the client meant the same steps each time. In one evening I put them into one shell script: the file list from the story's spec, the checks, lint, the merge request and a rollback. In May I gave each story its own git worktree, a separate checkout of the same repo, and four stories ran at once. In July one orchestrator thread took the place I used to hold. It handed each build, review and fix pass to a fresh sub-agent, with one commit per story.</p>
+<p><strong>Agents make the judgment calls. Scripts do the fixed steps. Each agent gets its own worktree.</strong></p>
+
+<h2><span class="mark" aria-hidden="true">## </span>2. From trusting the report to checking the result</h2>
+<p>This year I built two agent systems for my work on a large open-source app. The first grew to 279 commits from April to October. It finds issues in the project's tracker that we can take, alerts me on Telegram, and has agents (Claude Code or Codex CLI) draft proposals, each in its own git worktree. Later it moved to OpenClaw, with end-to-end agent tests.</p>
+<p>The second, from July, is a pipeline that fixes unsafe TypeScript type casts in the same app, a few files per small PR. Agents edit the file, run lint, type checks and tests, and prepare a draft PR. I approve every push.</p>
+<p>The pipeline's first version was a heavy Docker app. I replaced it with a small CLI and one skill. The agent that built the CLI reported 134 of 134 tests passing. Then an independent line-by-line audit found 28 problems: defects on the normal path, missing parts of the design, incomplete crash recovery, and tests that never touched the real production code. Every test was green. The tests were checking the wrong thing. A day later the same agent reported all 28 fixed. Its review list still had 13 fix items unchecked, so I rejected the claim and sent the work back.</p>
+<p>That changed how I read every report. "Tests pass" from the builder is the builder grading its own work. Now the check comes from someone else. In October I gave models roles: Opus plans and writes the code, and a GPT model only reviews. When I compared two UX audits, the second agent was told not to read the first one. And before I accept a finish, I ask one plain question: "did you cover my asks 100%?"</p>
+<p><strong>"Done" is a claim. The agent that did the work does not get to check it.</strong></p>
+
+<h2><span class="mark" aria-hidden="true">## </span>3. From patching the system to deleting it</h2>
+<p>By September, the type-cast pipeline was stuck. Some runs had been going for days. Part of it was my own doing. I had added a way to override checks when I asked, and the runs started to lean on it and loop. On 3 September I counted about 10 runs. Only four or five had opened a PR at all. Several others were stuck.</p>
+<p>So I stopped patching. That night I started over in a new repo. Every lesson from the old system stayed, and every stage became a ticket for a fresh agent session. On 4 September agents worked through the first ten tickets, with 44 commits on the main branch that day.</p>
+<p>Then I read it, file by file. On 5 and 6 September the agent explained each file, and I typed one decision per file, in capitals. One of them removed the state machine that tracked each piece of work, and moved its identity and scope checks into one check at handoff. After file 40, I approved the scope. The rule for the build was one line: "we have to make sure that we delete more and add less".</p>
+<p>From 5 to 9 September the main branch deleted 24,589 lines and added 16,284, lockfiles left out. Of the source files, 33 went and 9 new ones came in, and the TypeScript source shrank from 7,190 lines to 5,108. It was the second time I had thrown a version away. The first was the Docker app in July.</p>
+<p>I did the same with my own process. In November I removed BMAD, the planning method I had used since my first prompt, from every repo that still had it.</p>
+<p><strong>When patches stop working, rebuild smaller. Count the lines you delete.</strong></p>
+
+<h2><span class="mark" aria-hidden="true">## </span>4. From endless loops to stopping rules</h2>
+<p>Agents do not stop on their own. In early July one story review ran for an hour and kept repeating itself. No rule said when to stop.</p>
+<p>On 9 July I set one: at most three review cycles. Cycle 1 is a full review. Cycles 2 and 3 only check the fixes. After that, whatever is left goes into a deferred file, however critical it looks. Two weeks later I cut it further: one independent review, at most one repair, and no second review.</p>
+
+<figure>
+  <iframe src="graphics/reviews.html" title="How my review rule changed: no stop rule, then max 3 cycles, then one review and one repair, then one rule for every agent" loading="lazy"></iframe>
+  <figcaption>My review rule, four versions. <button type="button" data-replay>replay</button></figcaption>
+</figure>
+
+<p>The same idea now covers more than reviews. My runs fail closed: they stop at the first thing that does not add up. The stops I hit in July were real bugs in my own tool, such as a 256 KiB cap on git output that a 366 KB test file broke, and an 8,192-character limit that a draft PR description ran over. Each fix went into the tool, not into the run. In October I told my agents to keep the number of sub-agents small. And in November the review rule became one rule for every agent: fix only the must-fix findings, check those fixes once, and stop after at most three rounds with a list of what is still broken.</p>
+<p><strong>Write the stop rule before the loop starts: how many rounds, and where the rest goes.</strong></p>
+
+<h2><span class="mark" aria-hidden="true">## </span>5. From rules in my head to rules in a repo, tested</h2>
+<p>Before November my global rules sat in two separate files, the same skills sat in several places, and some rules lived only in my head. A new project started with none of them. On 31 October I decided that every new project should start with all my rules already in place.</p>
+<p>From 1 to 4 November I built one repo for that. It holds one global rules file that syncs to Claude and Codex, a wiki and one skill store. Git hooks check the rules, and a gate refuses to copy rules that fail those checks.</p>
+<p>I also cut. My first memory design was too big, and I stopped it: "I don't want one of my agents to know everything about everything". Now agents save only what the code cannot show: my corrections, my decisions and why, and what failed. Every rule became one short line in plain English. The skill store went from 48 skills to 16.</p>
+<p>Then I tested the rules like code, with an exam. It plants a change, starts fresh sessions, checks that they obey, and reverts. A one-line rule change reached every next session. A planted fake secret blocked the commit. A planted false wiki page did not fool them: both tools read the code and flagged the page as stale. On 6 November the wiki lookup scored 11 of 12 in Claude and 10 of 12 in Codex. The misses were on pages I had just changed. I fixed the pages and the questions, and both scored 12 of 12.</p>
+<p><strong>Agent rules are production config. Keep one copy, and test it with a fresh session.</strong></p>
+
+<h2><span class="mark" aria-hidden="true">## </span>What I would tell an engineer starting today</h2>
+<ol>
+  <li><strong>Get out of the middle early.</strong> If you paste the same thing twice, write a script. If two agents run at once, give each its own worktree.</li>
+  <li><strong>Do not take "done" from the agent that did the work.</strong> Check it with a test that runs the real path, or with a reviewer on a different model.</li>
+  <li><strong>Write your rules down once, in one place, and test them with a fresh session.</strong> Put a stop rule in them before you start any loop.</li>
+</ol>
+
+<figure>
+  <iframe src="graphics/flow.html" title="One change in March: dev chat, me pasting, review chat. One change in November: rules, orchestrator, fresh sub-agents, a reviewer on another model, checks, and my approval before push." loading="lazy"></iframe>
+  <figcaption>The same change, March vs November. <button type="button" data-replay>replay</button></figcaption>
+</figure>
+
+<p>I still approve every push. That rule has not changed since July. What changed is where I stand: at the end of the line, not in the middle of it.</p>
+<p>Each week I write up one lesson from this year, with the numbers and what broke. Follow along on <a href="https://linkedin.com/in/viralshastri19">LinkedIn</a>.</p>
+
+<hr>
+</main>
+<footer>
+  <p>Viral Shastri, backend and AI engineer. <a href="/blog/">More posts</a> · <a href="https://linkedin.com/in/viralshastri19">LinkedIn</a></p>
+</footer>
+<script>
+document.querySelectorAll('[data-replay]').forEach(b=>b.addEventListener('click',()=>{const f=b.closest('figure').querySelector('iframe');f.src=f.src;}));
+</script>
+</body>
+</html>

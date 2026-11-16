@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>245 approved, 6 thrown away</title>
+<style>
+  /* House look. Copy this block as is; see AGENTS.md. */
+  :root{--bg:#141414;--fg:#e6e6e6;--dim:#9a9a9a;--font:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font)}
+  svg{display:block;width:100%;height:auto}
+  svg text{font-family:var(--font);fill:var(--fg)}
+  .dim{fill:var(--dim)}
+  .ln{fill:none;stroke:var(--fg);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .thin{stroke-width:1.5}
+  .draw{stroke-dasharray:1;stroke-dashoffset:1}
+  .fade{opacity:0}
+  .go .draw{animation:draw .7s ease-out forwards;animation-delay:var(--d,0s)}
+  .go .fade{animation:fade .5s ease-out forwards;animation-delay:var(--d,0s)}
+  .final .draw{stroke-dashoffset:0}
+  .final .fade{opacity:1}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes fade{to{opacity:1}}
+</style>
+<script>
+  // ?final shows the end state (for PNG and PDF); otherwise the drawing plays once.
+  addEventListener('DOMContentLoaded',()=>document.body.classList.add(new URLSearchParams(location.search).has('final')?'final':'go'));
+</script>
+</head><body>
+<!-- 1080×1350. Dot chart: set TOTAL and MARKED (indexes to cross out). Real numbers only; see facts.md. -->
+<svg id="c" viewBox="0 0 1080 1350" role="img" aria-label="245 dots for 245 clean approvals; 6 are crossed out"></svg>
+<script>
+  const TOTAL = 245, MARKED = [23, 61, 108, 142, 187, 226], COLS = 16, TITLE = '245 approved. 6 thrown away.', NOTE = 'Each lost one had a single wrong character in its hash.';
+  const svg = document.getElementById('c'), NS = 'http://www.w3.org/2000/svg';
+  const el = (n, a, t) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (t) e.textContent = t; svg.appendChild(e); return e; };
+  el('text', {x: 90, y: 160, 'font-size': 40, 'font-weight': 700}, TITLE);
+  const step = 900 / COLS;
+  for (let i = 0; i < TOTAL; i++) {
+    const cx = 90 + step / 2 + (i % COLS) * step, cy = 300 + Math.floor(i / COLS) * step * 0.9;
+    const hit = MARKED.includes(i);
+    el('circle', {cx, cy, r: step * 0.22, 'stroke-width': 3, class: 'fade', style: 'fill:var(--' + (hit ? 'bg' : 'fg') + ');stroke:var(--fg);--d:' + (i * 0.01).toFixed(2) + 's'});
+    if (hit) { const r = step * 0.36; el('path', {d: 'M' + (cx - r) + ' ' + (cy - r) + 'L' + (cx + r) + ' ' + (cy + r) + 'M' + (cx + r) + ' ' + (cy - r) + 'L' + (cx - r) + ' ' + (cy + r), class: 'ln draw', pathLength: 1, style: '--d:' + (1.5 + MARKED.indexOf(i) * 0.3) + 's'}); }
+  }
+  el('text', {x: 90, y: 1180, 'font-size': 28, class: 'dim'}, NOTE);
+  el('path', {d: 'M90 1230 H990', class: 'ln thin'});
+  el('text', {x: 90, y: 1280, 'font-size': 24, class: 'dim'}, 'Viral Shastri · darkov19.github.io');
+</script>
+</body></html>

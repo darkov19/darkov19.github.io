@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My AI reviewer mistyped a hash. The fix was to stop asking it. · Viral Shastri</title>
+<meta name="description" content="An AI reviewer had to copy back a 64-character hash. In 6 of 245 clean approvals it got one character wrong. The fix, and the rule behind it: the model judges, the code copies.">
+<meta property="og:title" content="My AI reviewer mistyped a hash. The fix was to stop asking it.">
+<meta property="og:description" content="6 of 245 good approvals lost to one wrong character. The model judges, the code copies.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://darkov19.github.io/blog/ai-copied-hash/">
+<meta property="og:image" content="https://darkov19.github.io/blog/ai-copied-hash/graphics/chart.png">
+<link rel="canonical" href="https://darkov19.github.io/blog/ai-copied-hash/">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+:root{--bg:#fff;--fg:#000;--dim:#3d3d3d;--line:#000}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--fg:#fff;--dim:#c8c8c8;--line:#fff}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1.0625rem/1.75 "IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+main,header,footer{max-width:46rem;margin:0 auto;padding:0 1.25rem}
+a{color:var(--fg);text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:3px}
+a:focus-visible{outline:3px solid var(--fg);outline-offset:3px;text-decoration:none}
+.skip{position:absolute;left:-9999px;top:0;background:var(--fg);color:var(--bg);padding:.5rem 1rem}
+.skip:focus{left:1rem;top:1rem}
+.mark{color:var(--dim);font-weight:400}
+header{padding-top:2.5rem}
+h1{font-size:clamp(1.9rem,6vw,2.6rem);line-height:1.15;margin:0 0 .25rem;font-weight:700}
+.role{font-size:1.15rem;margin:0 0 1.5rem}
+h2{font-size:1.25rem;margin:3rem 0 1rem;font-weight:700}
+h3{font-size:1.0625rem;margin:1.75rem 0 .1rem;font-weight:700}
+p{margin:0 0 1rem}
+ul{margin:.5rem 0 1rem;padding-left:1.5rem}
+li{margin:.3rem 0}
+li::marker{content:"- "}
+.links{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;margin:0}
+.links li::marker{content:none}
+.meta{color:var(--dim);margin:0 0 .5rem}
+pre{margin:1rem 0 1.5rem;padding:1rem 1.25rem;border:1px solid var(--line);overflow-x:auto;font:inherit;line-height:1.7;white-space:pre-wrap}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:.35rem 1.5rem}
+dt{font-weight:700}
+dd{margin:0}
+hr{border:0;border-top:1px solid var(--line);margin:3rem 0 0}
+footer{padding-bottom:3rem;color:var(--dim)}
+footer p{margin-top:1.5rem}
+@media (max-width:560px){dl{grid-template-columns:1fr;gap:0}dd{margin-bottom:.75rem}}
+@media print{.skip{display:none}a{text-decoration:none}}
+figure{margin:1.5rem 0 2rem}
+figure iframe,figure img{display:block;width:100%;max-width:540px;height:auto;aspect-ratio:4/5;border:0;background:#141414}
+figcaption{color:var(--dim);font-size:.9rem;margin-top:.5rem}
+figcaption button{font:inherit;color:var(--fg);background:none;border:1px solid var(--line);padding:0 .5rem;margin-left:.5rem;cursor:pointer}
+code{font:inherit}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <p class="meta"><a href="/">Viral Shastri</a> / <a href="/blog/">Blog</a></p>
+  <h1><span class="mark" aria-hidden="true"># </span>My AI reviewer mistyped a hash. The fix was to stop asking it.</h1>
+  <p class="meta">16 November 2026 · 5 min read</p>
+</header>
+<main id="main">
+<p>My personal automation system writes study pages for me. Before a page is published, an AI reviewer reads it and decides: approved or not. Across 245 clean approvals, the code threw away 6 of them. The pages were fine. The reviewer had made a typo.</p>
+
+<figure>
+  <iframe src="graphics/chart.html" title="245 dots for 245 clean approvals; 6 are crossed out" loading="lazy"></iframe>
+  <figcaption>245 approved, 6 thrown away. <button type="button" data-replay>replay</button></figcaption>
+</figure>
+
+<h2><span class="mark" aria-hidden="true">## </span>Why the reviewer had to copy a hash</h2>
+<p>An approval has to point at one exact page. If the page changes between review and publish, an approval for version 1 would publish version 2. The fix for that is old and boring: a fingerprint.</p>
+<ul>
+  <li>Hash the page (SHA-256, 64 hex characters).</li>
+  <li>Store the hash with the approval.</li>
+  <li>Before publishing, hash the page again. If the hashes differ, nothing is published.</li>
+</ul>
+<p>The mistake was in <em>who</em> wrote the hash down. The reviewer returned it inside its JSON answer, in its own field, next to the verdict and the findings. So a 64-character random string had to pass through a language model on its way back.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>What broke</h2>
+<p>In 6 of the 245 clean approvals, the copied hash had one wrong character. The approval said "no findings", but its hash matched no page, so the code rejected it. Each of those 6 pages went back for a rewrite it didn't need, and one of them then failed.</p>
+
+<figure>
+  <img src="graphics/hash.png" alt="Two 64-character example hashes. They differ in one character, which is circled." loading="lazy" width="1080" height="1350">
+  <figcaption>An example hash with the same kind of mistake. Not a real one.</figcaption>
+</figure>
+
+<p>My guess at why it fails: random hex has no pattern a model can lean on, so it is the hardest kind of text to copy. The reviewer got it right 239 times out of 245. For a person, that's a great score. For a check that has to be exact, it's a bug.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>It wasn't the first time</h2>
+<p>Six days earlier, not a single study lesson had published. A different reviewer had to copy back an exact 32-character reviewer ID. It wrote "Independent artifact reviewer" instead, so every approval was thrown away.</p>
+<p>The fix then was for the system to fill in that ID and the file fingerprints from its own records. The AI only decides whether to approve and how each check went. A second AI reviewer then found a gap in that fix: filling fingerprints from working state meant someone who could edit both the lesson files and that state could publish a changed lesson under an old approval. So the fingerprint is now recorded in the review's audit log at the moment the review runs, and the published files must match it.</p>
+<p>Both times it was the same bug: I had asked a model to do a copy job.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>The fix</h2>
+<p>The code records the hash of the exact page it sends to the reviewer. The approval is bound to that hash, and the field is gone from the reviewer's output schema. If the model can't send it, it can't get it wrong.</p>
+<pre><code># example, not real code
+# Before: the model sends back the page hash
+verdict = reviewer(page)          # {"approved": true, "page_hash": "50d8...545c"}
+
+# After: the code keeps the hash of what it sent
+sent_hash = sha256(page)
+verdict = reviewer(page)          # {"approved": true}</code></pre>
+
+<figure>
+  <iframe src="graphics/diagram.html" title="Before: the AI reviewer copies the page hash and one wrong character rejects a good page. After: the code saves the hash itself and the AI returns only approved." loading="lazy"></iframe>
+  <figcaption>Before and after. <button type="button" data-replay>replay</button></figcaption>
+</figure>
+
+<p>The check itself didn't change. The page is still hashed again before publishing, and a page edited after review still can't go out. The safety stayed. Only the job of writing the number down moved.</p>
+<p>One detail I like: reviews saved before the fix have no code-side hash. For those, the copied hash is still used, and a wrong one still blocks publishing. No old approval got weaker.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>The rule: the model judges, the code copies</h2>
+<p>My system already had this rule on paper. The decision record for its AI runner says every model answer is an untrusted proposal, checked against its schema, identity, evidence and hashes before anything is recorded. The model never supplies the IDs the code relies on. The hash slipped through anyway, twice.</p>
+
+<figure>
+  <img src="graphics/rule.png" alt="Two columns. Model: is this page clear, is this claim backed, approve or not, why. Code: IDs, hashes, file paths, counts, timestamps." loading="lazy" width="1080" height="1350">
+</figure>
+
+<p>Now I check every model output schema with one question: is there a field here the code already knows? IDs, hashes, file paths, counts, timestamps. If so, it comes out of the schema and the code fills it in. The short version: if the code already knows it, don't ask the model for it.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>How the decision was made</h2>
+<p>The agent that found the problem didn't fix it. It wrote to me instead:</p>
+<pre><code>I recommend the app fill in the fingerprint of the page it sent, instead
+of asking the model to copy it. The check still ties each approval to the
+exact page reviewed. I haven't changed it, because the repo's rules say
+never to weaken approval checks without your decision. Say yes and I'll
+make the change.</code></pre>
+<p>My repo's rules say never to weaken approval hashes just to make a happy path pass. The agent read that as "this one needs the owner's decision", and that's exactly the behavior I want from it. I said yes at 21:08 IST. A second AI agent reviewed the change and checked that every path still ties an approval to the exact page. The full suite passed (3,684 tests), and the fix was live at 21:27 IST, 19 minutes after my yes.</p>
+<p>The decision is written down as a decision record, with my one-word answer as its source. Next time an agent wonders why the code works this way, the answer is in the repo.</p>
+
+<hr>
+</main>
+<footer>
+  <p>Viral Shastri, backend and AI engineer. <a href="/blog/">More posts</a> · <a href="https://linkedin.com/in/viralshastri19">LinkedIn</a></p>
+</footer>
+<script>
+document.querySelectorAll('[data-replay]').forEach(b=>b.addEventListener('click',()=>{const f=b.closest('figure').querySelector('iframe');f.src=f.src;}));
+</script>
+</body>
+</html>

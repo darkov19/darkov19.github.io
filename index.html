@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viral Shastri, Backend and AI Engineer</title>
+<meta name="description" content="Viral Shastri, backend and AI engineer. Notes on building with AI agents: designs, decisions, what failed and what fixed it.">
+<meta property="og:title" content="Viral Shastri, Backend and AI Engineer">
+<meta property="og:description" content="Backend and AI engineer. Notes on building with AI agents.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://darkov19.github.io/">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='black'/%3E%3Ctext x='16' y='21' font-family='monospace' font-weight='700' font-size='14' fill='white' text-anchor='middle'%3EVS%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--fg:#000;--dim:#3d3d3d;--line:#000}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--fg:#fff;--dim:#c8c8c8;--line:#fff}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1.0625rem/1.75 "IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+main,header,footer{max-width:46rem;margin:0 auto;padding:0 1.25rem}
+a{color:var(--fg);text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:3px}
+a:focus-visible{outline:3px solid var(--fg);outline-offset:3px;text-decoration:none}
+.skip{position:absolute;left:-9999px;top:0;background:var(--fg);color:var(--bg);padding:.5rem 1rem}
+.skip:focus{left:1rem;top:1rem}
+.mark{color:var(--dim);font-weight:400}
+header{padding-top:2.5rem}
+h1{font-size:clamp(1.9rem,6vw,2.6rem);line-height:1.15;margin:0 0 .25rem;font-weight:700}
+.role{font-size:1.15rem;margin:0 0 1.5rem}
+h2{font-size:1.25rem;margin:3rem 0 1rem;font-weight:700}
+h3{font-size:1.0625rem;margin:1.75rem 0 .1rem;font-weight:700}
+p{margin:0 0 1rem}
+ul{margin:.5rem 0 1rem;padding-left:1.5rem}
+li{margin:.3rem 0}
+li::marker{content:"- "}
+.links{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;margin:0}
+.links li::marker{content:none}
+.meta{color:var(--dim);margin:0 0 .5rem}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:.35rem 1.5rem}
+dt{font-weight:700}
+dd{margin:0}
+hr{border:0;border-top:1px solid var(--line);margin:3rem 0 0}
+footer{padding-bottom:3rem;color:var(--dim)}
+footer p{margin-top:1.5rem}
+@media (max-width:560px){dl{grid-template-columns:1fr;gap:0}dd{margin-bottom:.75rem}}
+@media print{.skip{display:none}a{text-decoration:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header>
+  <h1><span class="mark" aria-hidden="true"># </span>Viral Shastri</h1>
+  <p class="role">Backend and AI engineer. Based in India.</p>
+  <nav aria-label="Links">
+    <ul class="links">
+      <li><a href="https://github.com/darkov19">GitHub</a></li>
+      <li><a href="https://linkedin.com/in/viralshastri19">LinkedIn</a></li>
+      <li><a href="blog/">Blog</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <h2><span class="mark" aria-hidden="true">## </span>About</h2>
+  <p>Backend and AI engineer with nearly 5 years of shipping production systems end to end.</p>
+  <ul>
+    <li>Multi-agent AI pipelines: planners, workers, verifiers and independent AI reviewers, each in its own git worktree, with a human approval before anything ships.</li>
+    <li>Backend systems: event-driven pipelines, webhooks, background jobs, billing and entitlements.</li>
+  </ul>
+  <p>I write about what I learn building with AI agents: the designs, the decisions, what failed and what fixed it.</p>
+
+  <h2><span class="mark" aria-hidden="true">## </span>Writing</h2>
+  <ul>
+    <li><a href="blog/a-year-with-ai-agents/">I stopped being the message bus</a></li>
+    <li><a href="blog/ai-copied-hash/">My AI reviewer mistyped a hash. The fix was to stop asking it.</a></li>
+  </ul>
+  <p><a href="blog/">All posts</a></p>
+
+  <h2><span class="mark" aria-hidden="true">## </span>Skills</h2>
+  <dl>
+    <dt>Languages</dt><dd>Python, TypeScript, JavaScript (Node.js), Go</dd>
+    <dt>Backend</dt><dd>FastAPI, Flask, Express.js, REST APIs, event-driven pipelines, webhooks, background jobs</dd>
+    <dt>AI and agents</dt><dd>Multi-agent orchestration (Codex, Claude Code), schema-validated LLM output, sandboxed agents</dd>
+    <dt>Data</dt><dd>PostgreSQL, MongoDB, Redis, SQLite, Supabase</dd>
+    <dt>Cloud and DevOps</dt><dd>GCP, Docker, GitHub Actions, CI/CD</dd>
+    <dt>Frontend</dt><dd>React, Next.js, React Native, Flutter</dd>
+  </dl>
+</main>
+
+<footer>
+  <hr>
+  <p>Updated November 2026.</p>
+</footer>
+</body>
+</html>
