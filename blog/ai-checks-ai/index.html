@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>134 green tests and a broken tool · Viral Shastri</title>
+<meta name="description" content="My coding agent reported 134/134 tests passing, but the tool could not do its one job. Why green tests lied, and the six-role AI pipeline I built so the writer never grades its own work.">
+<meta property="og:title" content="134 green tests and a broken tool">
+<meta property="og:description" content="Six AI roles, one draft PR: the writer never grades its own work, every check is tied to exact content, and a person holds the last gate.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://darkov19.github.io/blog/ai-checks-ai/">
+<meta property="og:image" content="https://darkov19.github.io/blog/ai-checks-ai/graphics/diagram.png">
+<link rel="canonical" href="https://darkov19.github.io/blog/ai-checks-ai/">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+:root{--bg:#fff;--fg:#000;--dim:#3d3d3d;--line:#000}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--fg:#fff;--dim:#c8c8c8;--line:#fff}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1.0625rem/1.75 "IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+main,header,footer{max-width:46rem;margin:0 auto;padding:0 1.25rem}
+a{color:var(--fg);text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:3px}
+a:focus-visible{outline:3px solid var(--fg);outline-offset:3px;text-decoration:none}
+.skip{position:absolute;left:-9999px;top:0;background:var(--fg);color:var(--bg);padding:.5rem 1rem}
+.skip:focus{left:1rem;top:1rem}
+.mark{color:var(--dim);font-weight:400}
+header{padding-top:2.5rem}
+h1{font-size:clamp(1.9rem,6vw,2.6rem);line-height:1.15;margin:0 0 .25rem;font-weight:700}
+.role{font-size:1.15rem;margin:0 0 1.5rem}
+h2{font-size:1.25rem;margin:3rem 0 1rem;font-weight:700}
+h3{font-size:1.0625rem;margin:1.75rem 0 .1rem;font-weight:700}
+p{margin:0 0 1rem}
+ul{margin:.5rem 0 1rem;padding-left:1.5rem}
+li{margin:.3rem 0}
+li::marker{content:"- "}
+.links{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;margin:0}
+.links li::marker{content:none}
+.meta{color:var(--dim);margin:0 0 .5rem}
+pre{margin:1rem 0 1.5rem;padding:1rem 1.25rem;border:1px solid var(--line);overflow-x:auto;font:inherit;line-height:1.7;white-space:pre-wrap}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:.35rem 1.5rem}
+dt{font-weight:700}
+dd{margin:0}
+hr{border:0;border-top:1px solid var(--line);margin:3rem 0 0}
+footer{padding-bottom:3rem;color:var(--dim)}
+footer p{margin-top:1.5rem}
+@media (max-width:560px){dl{grid-template-columns:1fr;gap:0}dd{margin-bottom:.75rem}}
+@media print{.skip{display:none}a{text-decoration:none}}
+figure{margin:1.5rem 0 2rem}
+figure iframe,figure img{display:block;width:100%;max-width:540px;height:auto;aspect-ratio:4/5;border:0;background:#141414}
+figcaption{color:var(--dim);font-size:.9rem;margin-top:.5rem}
+figcaption button{font:inherit;color:var(--fg);background:none;border:1px solid var(--line);padding:0 .5rem;margin-left:.5rem;cursor:pointer}
+code{font:inherit}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <p class="meta"><a href="/">Viral Shastri</a> / <a href="/blog/">Blog</a></p>
+  <h1><span class="mark" aria-hidden="true"># </span>134 green tests and a broken tool</h1>
+  <p class="meta">21 November 2026 · 6 min read</p>
+</header>
+<main id="main">
+<p>My coding agent finished a build and reported its result: the full suite passed, 134 of 134. I asked a second agent to check that build against the spec, line by line. Its first blocking finding was that the tool could not succeed at the one thing it was built to do.</p>
+<p>This post is about that failure, and about the pipeline I built after it. The pipeline has six AI roles, and the agent that writes the code is never the one that says it's done.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>What the tool does</h2>
+<p>The tool fixes unsafe TypeScript type casts in a large open-source app, a few files per small PR. An unsafe cast is a place where the code tells the type checker "trust me, this is the right type" when the checker can't prove it. The app keeps a baseline: a list of old lint warnings for these casts that each file is still allowed, for now. A cleanup takes one file to zero warnings, and the file drops off the list.</p>
+<p>I did the first cleanup by hand. Then I asked the agent to write down every problem we hit, so the tool could follow that field guide.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>What broke</h2>
+<p>In July I had a command-line version of the tool, built by a coding agent. Its report said the full suite passed, 134 of 134. I pasted that report into a separate chat and asked that agent to check the build against the spec and the planning documents, line by line, and to flag anything partial or missing.</p>
+<p>Its verdict: "not production-ready". It ran the tests itself and confirmed 134 of 134. Then came its first blocking finding, word for word: "A cleanup reaching zero warnings cannot pass local verification."</p>
+<p>The code required the file's row to still be in the baseline. But when a file reaches zero, its row is gone. The hand-made field guide said exactly that, and the tool got it wrong. Zero warnings was the whole point.</p>
+<p>Another finding: the tool could not make a follow-up commit at all. The test for follow-up commits skipped the real code path and called an internal function directly. The auditor's summary of the suite: "several tests bypass the real production path or model an impossible state."</p>
+<figure>
+  <img src="graphics/quote.png" alt="Two audit rounds. Round 1: tests 134/134 passed; verdict: not production-ready; first blocking finding: A cleanup reaching zero warnings cannot pass local verification. Round 2: the 28/28 claim is unsupported despite the green suite; 13 patches still needed." loading="lazy" width="1080" height="1350">
+  <figcaption>What the audit agent found, two rounds.</figcaption>
+</figure>
+<p>The audit listed 28 numbered findings. The builder fixed them and reported all 28 complete. The auditor checked again: "The 28/28 claim is unsupported despite the green suite." 13 items still needed a patch.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>Why the tests were green</h2>
+<p>My read: the same agent wrote the code, the tests and the report. When one agent does all three, its tests check what it meant to build, not what the spec asked for. That's my explanation, not something I measured. But it matches what the auditor found: tests that went around the real path.</p>
+<p>So the rule I took into v2 of the pipeline, which I started in September: the agent that writes the code never grades it.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>Six roles</h2>
+<p>In v2 each role is a fresh, visible chat with one job:</p>
+<ul>
+  <li><strong>Planner</strong>: names every file the change may touch, and no other file.</li>
+  <li><strong>Worker</strong>: makes the change. It is the only role that can edit.</li>
+  <li><strong>Verifier</strong>: runs seven focused checks on the result.</li>
+  <li><strong>Scope, type-safety and regression reviewers</strong>: three independent reviews of the same verified change.</li>
+</ul>
+<p>Two more read-only roles check the plan (plan reviewer) and write the PR title and body (PR writer). An orchestrator chat routes the work. It is the only one that can commit, sign or push.</p>
+<figure>
+  <iframe src="graphics/diagram.html" title="One run, out of five in a batch, each in its own git worktree: planner, worker, verifier, three reviewers, a signed commit tested by CI on that exact commit, then a draft PR that a person approves." loading="lazy"></iframe>
+  <figcaption>One run, from plan to draft PR. <button type="button" data-replay>replay</button></figcaption>
+</figure>
+<p>The rules keep these apart. The planner and the plan reviewer are separate chats. The worker is separate from the verifier and from every reviewer. The three reviewers get the same verified change, and no reviewer may count another's guesses as its own conclusion.</p>
+<p>Each run gets its own git worktree. A batch is five runs of five files each. A run reserves all of its files at once before it starts, or waits, so two runs never edit the same file.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>File scope</h2>
+<p>The "only the planned files" rule came from a real moment. In July an agent was fixing a test that passed a fake value and told the type checker to trust it. Here is the same pattern, with made-up names:</p>
+<pre><code>// example: the cast makes the type checker accept a page that does not exist
+expect(findPath('no-such-page' as PageName)).toBeUndefined();</code></pre>
+<p>The test reached the "not found" branch through a value the types say can't exist, and the cast was the lint warning the cleanup had to remove. The agent's best fix widened two other source files so they would accept any string. It said itself: "It does touch adjacent source files, so it conflicts with the current target-files-only constraint". I told it that only the target file may change.</p>
+<p>So it found a fix inside the test, and named the real bug: "The test is lying to the type system". The new test passes a real value and removes that value's entry for the length of the test, so the real lookup runs and finds nothing:</p>
+<pre><code>// example: a real page, with its entry removed for this test only
+const saved = pathTable.settings;
+pathTable.settings = undefined;
+try {
+  expect(findPath('settings')).toBeUndefined();
+} finally {
+  pathTable.settings = saved;
+}</code></pre>
+<p>In v2 that is a rule, not a reminder. The worker writes only the paths in the approved plan. If a new file is needed, the work goes back to planning and plan review first.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>Tie each check to exact content</h2>
+<p>A check only means something for the exact thing it checked. v2 ties its checks together in a chain:</p>
+<pre><code>reviewed files -> signed commit -> pushed commit -> tested commit -> draft PR</code></pre>
+<figure>
+  <img src="graphics/chain.png" alt="Five linked boxes: reviewed files, signed commit, pushed commit, tested commit, draft PR, with what binds each one." loading="lazy" width="1080" height="1350">
+</figure>
+<ul>
+  <li>The review is bound to a hash of the changed files, the list of changed paths and the repo's rules. Change any of them and old reviews stop counting.</li>
+  <li>The commit is signed, and checked against the review before any push.</li>
+  <li>Pushes are append-only. No force push.</li>
+  <li>CI runs on a fork, on that exact commit. This check can never be waived.</li>
+  <li>The draft PR shows that same commit.</li>
+</ul>
+<p>Local checks are focused on the changed files; the full lint, typecheck and test suite never run locally. A local check that ran and failed must be fixed. A check that can't run here can be skipped only with my approval, and the record then says "waived", never "passed". The verifier's rule is strict: partial or missing evidence can never count as clean.</p>
+<p>I saw that hold up on a real evening. A verifier checked a 14-file change. Formatting, spelling, focused lint, typecheck and 6 unit test suites (33 tests) all passed. One check failed: the compiler check, on one changed file. The same errors were already there in the upstream code, before the change. The verifier still returned <code>failed</code>, kept both results and left the call to the orchestrator. It did not round it up to a pass.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>One evening in numbers</h2>
+<p>One evening in October, in 95 minutes, the pipeline worked on four open draft PRs. I counted the role chats in the chat logs.</p>
+<figure>
+  <iframe src="graphics/chart.html" title="Role chats in one evening: planner 8, plan reviewer 4, worker 3, verifier 7, scope 2, type safety 2, regression 2. Only the 3 worker chats could edit." loading="lazy"></iframe>
+  <figcaption>28 role chats. 3 could edit. <button type="button" data-replay>replay</button></figcaption>
+</figure>
+<p>28 chats, and only 3 of them could change a file. The other 25 could only read and report. At one point the three reviewers started within half a second of each other, on the same change, and each wrote its own result. All three came back clean.</p>
+<p>Most of my AI pipeline does not write code. It checks code.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>The last check is a person</h2>
+<p>The pipeline stops at a draft PR. To create or update one, it shows me the exact request, and my approval stores a hash of it: title, body and signed commit. If any of those change, it needs a new approval. When I once approved a repair in chat, the agent recorded my exact words, with a note that it had not heard them from me directly.</p>
+<p>Ready for Review, comments, replies and merging are not the pipeline's job. People do those.</p>
+<p>The rules are also clear about what success means. It means the pipeline never gets stuck. It does not mean that every file it picks deserves a draft PR.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>The rewrite</h2>
+<p>v2's first version wasn't this one. The tool's history is short: a first app in July, the command-line version from mid-July, and v2 from early September.</p>
+<p>On one day in early September, v2 got 44 commits on its main branch. They built a full run engine in seven planned steps: durable runs, planning, work and verify, typed reviews, signed commits with CI on the exact commit, publication, and integration.</p>
+<p>Two days later the design moved to roles as chats. That evening one commit changed 125 files: 359 lines added and 24,066 deleted. The docs now mark that first engine as replaced, and say its last steps never proved themselves in production.</p>
+<p>From early September to late October, main got 141 commits: 117 in September and 24 in October.</p>
+<p>The rules now list what the design leaves out: no hidden programs driving the roles, no process supervisors, no giant generated prompts, no retry budgets or automatic repair loops, and no workflow engine. The roles are visible chats, and the code only checks facts: paths, hashes, commits. I build the pipeline itself the same way. Every implementation and repair gets a fresh task, and a fresh review after it.</p>
+
+<h2><span class="mark" aria-hidden="true">## </span>How the decision was made</h2>
+<p>The rule came from a question I asked the audit agent in July. It had just listed 28 findings, and I wanted the builder to fix them all. So I asked how to tell the builder, so it wouldn't miss anything again.</p>
+<p>Its answer, word for word: "Send them one self-contained closure prompt that makes the audit—not the existing checkpoint ledger—the new source of work. It should forbid “tests pass, therefore done” reasoning and require a requirement-by-requirement closure matrix."</p>
+<p>The checkpoint ledger was the builder's own progress notes. The closure matrix is a table that closes each requirement, one by one.</p>
+<p>The prompt it wrote said: "Do not claim completion while any item is Missing, Partial, untested through its real production entrypoint, or silently reclassified as “hardening.”" Even with that prompt, the builder came back with 28/28, and the second audit found 13 left.</p>
+<p>That's the lesson I'd pass on. A better prompt helps, but it doesn't make an agent a good judge of its own work. Give the judging to someone else: another agent, a check bound to exact content, and at the end, a person.</p>
+
+<hr>
+</main>
+<footer>
+  <p>Viral Shastri, backend and AI engineer. <a href="/blog/">More posts</a> · <a href="https://linkedin.com/in/viralshastri19">LinkedIn</a> · <a href="https://x.com/darkoships">X</a></p>
+</footer>
+<script>
+document.querySelectorAll('[data-replay]').forEach(b=>b.addEventListener('click',()=>{const f=b.closest('figure').querySelector('iframe');f.src=f.src;}));
+</script>
+</body>
+</html>
